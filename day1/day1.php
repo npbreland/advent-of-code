@@ -1,7 +1,5 @@
 <?php
 
-// SUCCESS!
-
 function chunkElvesCalories($lines)
 {
     // Chunk calorie counts into one array per elf

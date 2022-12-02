@@ -45,7 +45,7 @@ function getMyRoundScorePart1($their_shape, $my_shape)
                 case SCISSORS['their_shape']:
                     return WIN['score'] + ROCK['score'];
             }
-            // no break
+            break;
         case PAPER['my_shape']:
             switch ($their_shape) {
                 case ROCK['their_shape']:
@@ -55,7 +55,7 @@ function getMyRoundScorePart1($their_shape, $my_shape)
                 case SCISSORS['their_shape']:
                     return LOSE['score'] + PAPER['score'];
             }
-            // no break
+            break;
         case SCISSORS['my_shape']:
             switch ($their_shape) {
                 case ROCK['their_shape']:
@@ -80,7 +80,7 @@ function getMyRoundScorePart2($their_shape, $end_shape)
                 case SCISSORS['their_shape']:
                     return LOSE['score'] + PAPER['score'];
             }
-            // no break
+            break;
         case DRAW['shape']:
             switch ($their_shape) {
                 case ROCK['their_shape']:
@@ -90,7 +90,7 @@ function getMyRoundScorePart2($their_shape, $end_shape)
                 case SCISSORS['their_shape']:
                     return DRAW['score'] + SCISSORS['score'];
             }
-            // no break
+            break;
         case WIN['shape']:
             switch ($their_shape) {
                 case ROCK['their_shape']:

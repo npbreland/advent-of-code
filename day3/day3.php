@@ -62,7 +62,8 @@ $sum_misplaced = array_reduce($lines, function ($acc, $line) {
 
 echo <<<MSG
 Part 1. Sum of the priorities of misplaced items: $sum_misplaced 
-MSG . PHP_EOL;
+MSG;
+echo PHP_EOL;
 
 // Part 2
 $groups = array_chunk($lines, 3);
@@ -72,4 +73,5 @@ $sum_badges = array_reduce($groups, function ($acc, $group) {
 
 echo <<<MSG
 Part 2. Sum of the priorities of group badges: $sum_badges 
-MSG . PHP_EOL;
+MSG;
+echo PHP_EOL;

@@ -8,8 +8,8 @@
  * @param int $len length of marker
  *
  * @return array [
- *  "marker" => string: the marker,
- *  "position" => int: position of last char
+ *  "marker"    => (string) the marker
+ *  "position"  => (int) position of last char in marker
  *  ]
  */
 function findMarker($fp, $len)

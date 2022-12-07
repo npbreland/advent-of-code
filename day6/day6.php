@@ -21,11 +21,8 @@ function findMarker($fp, $len)
         $char = fgetc($fp);
         array_push($last, $char);
 
-        if (count($last) < $len) {
-            // We aren't far enough to start checking
-            continue;
-        } elseif (count($last) > $len) {
-            // We only look at last $len, so remove the oldest one
+        // We only look at last $len, so remove the oldest one
+        if (count($last) > $len) {
             array_shift($last);
         }
     }

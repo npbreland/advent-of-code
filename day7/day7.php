@@ -35,11 +35,9 @@ class DirNode
 
     public function getSizeRecursive(): int
     {
-        return
-            $this->size +
-            array_reduce($this->children, function ($acc, $child) {
-                return $acc + $child->getSizeRecursive();
-            });
+        return array_reduce($this->children, function ($acc, $child) {
+            return $acc + $child->getSizeRecursive();
+        }, $this->size);
     }
 
     public function getChild(string $name): DirNode|false

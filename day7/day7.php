@@ -30,11 +30,6 @@ class DirNode
         return $this->parent;
     }
 
-    public function getChildren(): array
-    {
-        return $this->children;
-    }
-
     public function addToSize(int $size): void
     {
         $this->size += $size;
@@ -112,4 +107,4 @@ $enough_to_free = array_filter($dir_sizes, function ($size) use ($to_free) {
 
 $smallest_to_free = min($enough_to_free);
 
-echo "Part 2. Size of smallest dir that will free: " . $smallest_to_free . PHP_EOL;
+echo "Part 2. Smallest dir that will free: " . $smallest_to_free . PHP_EOL;

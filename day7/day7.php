@@ -1,7 +1,5 @@
 <?php
 
-$lines = file("input", FILE_IGNORE_NEW_LINES);
-
 class DirNode
 {
     public string $name;
@@ -53,6 +51,8 @@ class DirNode
         return $this->children[$key];
     }
 }
+
+$lines = file("input", FILE_IGNORE_NEW_LINES);
 
 $nodes = [];
 

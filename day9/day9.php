@@ -10,88 +10,45 @@ class Position
         $this->x = $x;
         $this->y = $y;
     }
-
-    public function incX(int $num = 1): void
-    {
-        $this->x += $num;
-    }
-
-    public function decX(int $num = 1): void
-    {
-        $this->x -= $num;
-    }
-
-    public function incY(int $num = 1): void
-    {
-        $this->y += $num;
-    }
-
-    public function decY(int $num = 1): void
-    {
-        $this->y -= $num;
-    }
-
-    public function setX(int $x): void
-    {
-        $this->x = $x;
-    }
-
-    public function setY(int $y): void
-    {
-        $this->y = $y;
-    }
-
-    public function getX(): int
-    {
-        return $this->x;
-    }
-
-    public function getY(): int
-    {
-        return $this->y;
-    }
 }
 
-class Head
+class Knot
 {
-    private Position $pos;
+    public Position $pos;
 
     public function __construct()
     {
         $this->pos = new Position(0, 0);
     }
+}
 
-    public function getPos(): Position
-    {
-        return $this->pos;
-    }
-
+class Head extends Knot
+{
     public function moveByOne(string $direction)
     {
         switch ($direction) {
             case 'U':
-                $this->pos->incY();
+                $this->pos->y++;
                 break;
             case 'D':
-                $this->pos->decY();
+                $this->pos->y--;
                 break;
             case 'L':
-                $this->pos->decX();
+                $this->pos->x--;
                 break;
             case 'R':
-                $this->pos->incX();
+                $this->pos->x++;
                 break;
         }
     }
 }
 
-class Tail
+class Tail extends Knot
 {
-    private Position $pos;
-    private Head $head;
-    private array $visited = [];
+    public Knot $head;
+    public array $visited = [];
 
-    public function __construct(Head $head)
+    public function __construct(Knot $head)
     {
         $this->pos = new Position(0, 0);
         $this->head = $head;
@@ -100,8 +57,8 @@ class Tail
 
     private function tallyPosition(): void
     {
-        $x = $this->pos->getX();
-        $y = $this->pos->getY();
+        $x = $this->pos->x;
+        $y = $this->pos->y;
         $key = "($x, $y)";
 
         if (isset($this->visited[$key])) {
@@ -124,10 +81,10 @@ class Tail
     {
         for ($y = 4; $y >= 0; $y--) {
             for ($x = 0; $x < 6; $x++) {
-                if ($this->head->getPos()->getX() === $x
-                    && $this->head->getPos()->getY() === $y) {
+                if ($this->head->pos->x === $x
+                    && $this->head->pos->y === $y) {
                     echo 'H';
-                } elseif ($this->pos->getX() === $x && $this->pos->getY() === $y) {
+                } elseif ($this->pos->x === $x && $this->pos->y === $y) {
                     echo 'T';
                 } elseif ($x === 0 && $y === 0) {
                     echo 's';
@@ -146,54 +103,27 @@ class Tail
 
     private function getXDiff(): int
     {
-        return $this->head->getPos()->getX() - $this->pos->getX();
+        return $this->head->pos->x - $this->pos->x;
     }
 
     private function getYDiff(): int
     {
-        return $this->head->getPos()->getY() - $this->pos->getY();
-    }
-
-    private function adjacentToHead(): bool
-    {
-        // On the same point or touching
-        return abs($this->getXDiff()) <= 1 && abs($this->getYDiff()) <= 1;
+        return $this->head->pos->y - $this->pos->y;
     }
 
     public function printPos(): void
     {
-        $x = $this->pos->getX();
-        $y = $this->pos->getY();
-        $key = "$x $y";
-        echo $key . PHP_EOL;
+        echo "$this->pos->x $this->pos->y" . PHP_EOL;
     }
 
-
-    public function moveToBeAdjacent(): void
+    public function followHead(): void
     {
-        if ($this->adjacentToHead()) {
-            return;
-        }
+        $xdiff = $this->getXDiff();
+        $ydiff = $this->getYDiff();
 
-        $head_x = $this->head->getPos()->getX();
-        $head_y = $this->head->getPos()->getY();
-
-        if (abs($this->getYDiff()) > 1) {
-            $this->pos->setX($head_x);
-
-            if ($this->getYDiff() > 1) {
-                $this->pos->setY($head_y - 1);
-            } else {
-                $this->pos->setY($head_y + 1);
-            }
-        } else {
-            $this->pos->setY($head_y);
-
-            if ($this->getXDiff() > 1) {
-                $this->pos->setX($head_x - 1);
-            } else {
-                $this->pos->setX($head_x + 1);
-            }
+        if (abs($xdiff) > 1 || abs($ydiff) > 1) {
+            $this->pos->x += $xdiff <=> 0;
+            $this->pos->y += $ydiff <=> 0;
         }
 
         $this->tallyPosition();
@@ -216,8 +146,29 @@ $instructions = array_map(function ($row) {
 foreach ($instructions as $row) {
     for ($i = 0; $i < $row['num']; $i++) {
         $head->moveByOne($row['direction']);
-        $tail->moveToBeAdjacent();
+        $tail->followHead();
+        //$tail->printGrid();
     }
 }
 
 echo "Part 1. Positions visited at least once: " . count($tail->getVisited()) . PHP_EOL;
+
+$head = new Head();
+$knots = [ $head ];
+
+for ($i = 1; $i < 10; $i++) {
+    $knots[] = new Tail($knots[$i - 1]);
+}
+
+foreach ($instructions as $row) {
+    for ($i = 0; $i < $row['num']; $i++) {
+        $head->moveByOne($row['direction']);
+
+        /** @var Tail **/
+        foreach (array_slice($knots, 1) as $knot) {
+            $knot->followHead();
+        }
+    }
+}
+
+echo "Part 2. Positions visited at least once: " . count(end($knots)->getVisited()) . PHP_EOL;

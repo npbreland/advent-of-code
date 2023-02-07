@@ -92,7 +92,7 @@ class Monkey
 }
 
 
-$lines = file("test-input", FILE_IGNORE_NEW_LINES);
+$lines = file("input", FILE_IGNORE_NEW_LINES);
 
 $monkey_lines = array_values(array_filter($lines, function ($line) {
     return substr($line, 0, strlen('Monkey')) === 'Monkey';

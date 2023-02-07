@@ -2,43 +2,54 @@
 
 class Item
 {
-    public $worry;
+    private $startingWorry;
+    private $ops;
+    private $nums;
 
-    public function __construct($worry)
+    public function __construct($startingWorry)
     {
-        $this->worry = $worry;
+        $this->startingWorry = $startingWorry;
     }
 
-    public function doOperation(string $op, $num): void
+    public function addOperation(string $op, $num): void
     {
-        // Special case. if no number is specified, it's the current worry
-        if (is_null($num)) {
-            $num = $this->worry;
-        }
-
-        switch ($op) {
-            case '+':
-                $this->worry = bcadd($this->worry, $num);
-                break;
-            case '*':
-                $this->worry = bcmul($this->worry, $num);
-                break;
-        }
+        $this->ops[] = $op;
+        $this->nums[] = $num;
     }
 
-    public function isDivisibleBy($num): bool
+    /**
+     * Perform list of operations in order under the given mod.
+     *
+     * @param int $mod
+     *
+     * @return bool Return true if worry is divisible by value (i.e. 0 mod $mod)
+     */
+    public function doOperationsInMod(int $mod): bool
     {
-        return bcmod($this->worry, $num) == 0;
+        $worry = $this->startingWorry;
+        foreach ($this->ops as $i => $op) {
+            $num = $this->nums[$i];
+
+            if (is_null($num)) {
+                $num = $worry;
+            }
+
+            switch ($op) {
+                case '+':
+                    $worry = ($worry + $num) % $mod;
+                    break;
+                case '*':
+                    $worry = ($worry * $num) % $mod;
+                    break;
+            }
+        }
+
+        return $worry === 0;
     }
 
     public function throwToMonkey(Monkey $monkey): void
     {
         $monkey->addItem($this);
-    }
-
-    public function reduceWorry(): void
-    {
-        $this->worry = bcdiv($this->worry, 3);
     }
 }
 
@@ -69,18 +80,14 @@ class Monkey
         $div_num,
         Monkey $true_monkey,
         Monkey $false_monkey,
-        bool $reduce_worry = true
     ) {
         while (count($this->item_list) > 0) {
             /** @var Item **/
             $item = array_shift($this->item_list);
-            $item->doOperation($op, $op_num);
 
-            if ($reduce_worry) {
-                $item->reduceWorry();
-            }
+            $item->addOperation($op, $op_num);
 
-            if ($item->isDivisibleBy($div_num)) {
+            if ($item->doOperationsInMod($div_num)) {
                 $item->throwToMonkey($true_monkey);
             } else {
                 $item->throwToMonkey($false_monkey);
@@ -167,7 +174,7 @@ $false_monkeys = array_map(function ($line) {
     return $matches[0];
 }, $false_lines);
 
-for ($round = 0; $round < 20; $round++) {
+for ($round = 0; $round < 10000; $round++) {
     /** @var Monkey */
     foreach ($monkeys as $key => $monkey) {
         $op = $operations[$key];
@@ -181,7 +188,6 @@ for ($round = 0; $round < 20; $round++) {
             $test,
             $monkeys[$true_monkey],
             $monkeys[$false_monkey],
-            true
         );
     }
 }
@@ -194,4 +200,4 @@ $inspected_counts = array_column($monkeys, 'inspected');
 rsort($inspected_counts);
 
 $monkey_business = $inspected_counts[0] * $inspected_counts[1];
-echo "Part 1. Monkey business: $monkey_business" . PHP_EOL;
+echo "Part 2. Monkey business: $monkey_business" . PHP_EOL;

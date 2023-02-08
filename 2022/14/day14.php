@@ -63,8 +63,8 @@ function buildGrid(array $pointGroups): array
     return [ $grid, $maxY ];
 }
 
+// Initialize values
 list($grid, $maxY) = buildGrid($pointGroups);
-
 $grain = [SAND_SOURCE_X, SAND_SOURCE_Y];
 $grainsAtRest = 0;
 
@@ -88,18 +88,11 @@ function moveGrain($grid, $grain): array
     return [ $grain, false ];
 }
 
-function addGrainToGrid($grid, $grain)
-{
-    return [ $grid, $grain ];
-    return $grid;
-}
-
 while ($grain[1] < $maxY) {
     list($grain, $moved) = moveGrain($grid, $grain);
     if ($moved) {
         continue;
     }
-
     /* Grain can't move. Stays in place, so we put it in the grid and start
      * over with a new grain */
     $grid[$grain[0]][$grain[1]] = true;
@@ -111,7 +104,10 @@ echo "Part 1. Grains at rest: $grainsAtRest" . PHP_EOL;
 
 // Part 2
 $maxY = $maxY + 2;
+// Refresh values
 $grainsAtRest = 0;
+list($grid) = buildGrid($pointGroups);
+$grain = [SAND_SOURCE_X, SAND_SOURCE_Y];
 
 function moveGrain2($grid, $grain, $maxY)
 {
@@ -122,17 +118,11 @@ function moveGrain2($grid, $grain, $maxY)
     return moveGrain($grid, $grain);
 }
 
-list($grid) = buildGrid($pointGroups);
-
-$grain = [SAND_SOURCE_X, SAND_SOURCE_Y];
 while (!isset($grid[SAND_SOURCE_X][SAND_SOURCE_Y])) {
     list($grain, $moved) = moveGrain2($grid, $grain, $maxY);
     if ($moved) {
         continue;
     }
-
-    /* Grain can't move. Stays in place, so we put it in the grid and start
-     * over with a new grain */
     $grid[$grain[0]][$grain[1]] = true;
     $grainsAtRest++;
     $grain = [SAND_SOURCE_X, SAND_SOURCE_Y];

@@ -24,13 +24,13 @@ class Node
         $this->elevation = $elevation;
     }
 
-    public function addConnectionsFromGraph(array $nodes): void
+    public function addConnectionsFromGraph(array $graph): void
     {
         $neighbors = [
-            $nodes[$this->x][$this->y - 1] ?? null,
-            $nodes[$this->x][$this->y + 1] ?? null,
-            $nodes[$this->x - 1][$this->y] ?? null,
-            $nodes[$this->x + 1][$this->y] ?? null,
+            $graph[$this->x][$this->y - 1] ?? null,
+            $graph[$this->x][$this->y + 1] ?? null,
+            $graph[$this->x - 1][$this->y] ?? null,
+            $graph[$this->x + 1][$this->y] ?? null,
         ];
 
         $neighbors = array_filter($neighbors, function ($node) {

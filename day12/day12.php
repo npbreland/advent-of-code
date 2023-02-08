@@ -44,31 +44,40 @@ class Node
     }
 }
 
-$lines = file('input', FILE_IGNORE_NEW_LINES);
 
-$graph = [];
-$nodes = [];
+function buildNodes(): array
+{
+    $lines = file('input', FILE_IGNORE_NEW_LINES);
+    $graph = [];
+    $nodes = [];
 
-/* Parse input into nodes. $graph is a 2D array of nodes, indexed by x and y.
- * this will make it easier to find neighbors. $nodes is a flat array of all
- * nodes, which is easier to loop through. */
-foreach ($lines as $y => $line) {
-    $chars = str_split($line);
-    foreach ($chars as $x => $char) {
-        $node = new Node($x, $y, $char);
-        $graph[$x][$y] = $node;
-        $nodes[] = $node;
-        if ($char === 'S') {
-            $start = $node;
-        } elseif ($char === 'E') {
-            $end = $node;
+    /* Parse input into nodes. $graph is a 2D array of nodes, indexed by x and y.
+     * this will make it easier to find neighbors. $nodes is a flat array of all
+     * nodes, which is easier to loop through. */
+    foreach ($lines as $y => $line) {
+        $chars = str_split($line);
+        foreach ($chars as $x => $char) {
+            $node = new Node($x, $y, $char);
+            $graph[$x][$y] = $node;
+            $nodes[] = $node;
+            if ($char === 'S') {
+                $start = $node;
+            } elseif ($char === 'E') {
+                $end = $node;
+            }
         }
     }
-}
 
-// Add connections to nodes
-foreach ($nodes as $node) {
-    $node->addConnectionsFromGraph($graph);
+    // Add connections to nodes
+    foreach ($nodes as $node) {
+        $node->addConnectionsFromGraph($graph);
+    }
+
+    return [
+        'nodes' => $nodes,
+        'start' => $start,
+        'end' => $end
+    ];
 }
 
 
@@ -91,8 +100,6 @@ function findShortestPath(array $nodes, Node $start, Node $end)
         });
 
         $minDistance = min(array_column($unvisited, 'distance'));
-
-
 
         if ($minDistance === INF) {
             return [
@@ -129,6 +136,39 @@ function findShortestPath(array $nodes, Node $start, Node $end)
     return $aux($start);
 }
 
+function resetNodes(array $nodes): void
+{
+    foreach ($nodes as $node) {
+        $node->visited = false;
+        $node->distance = INF;
+        $node->parent = null;
+    }
+}
+
+$nodeResult = buildNodes();
+$start = $nodeResult['start'];
+$end = $nodeResult['end'];
+$nodes = $nodeResult['nodes'];
+
 $result = findShortestPath($nodes, $start, $end);
 
 echo 'Part 1. Distance: ' . $result['distance'] . PHP_EOL;
+
+// Part 2
+resetNodes($nodes);
+
+// Find the shortest path from a node with elevation 'a' to the end node
+$aNodes = array_filter($nodes, function ($node) {
+    return $node->elevation === 'a';
+});
+
+$shortest = INF;
+foreach ($aNodes as $aNode) {
+    $result = findShortestPath($nodes, $aNode, $end);
+    if ($result['distance'] < $shortest) {
+        $shortest = $result['distance'];
+    }
+    resetNodes($nodes); // Need to reset before finding next path
+}
+
+echo 'Part 2. Distance: ' . $shortest . PHP_EOL;

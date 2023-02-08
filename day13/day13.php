@@ -2,6 +2,7 @@
 
 function pairIsInOrder($pair): bool
 {
+    // Inner function can be inconclusive -- we denote this with null
     $aux = function ($pair) use (&$aux): ?bool {
         $left = $pair[0];
         $right = $pair[1];

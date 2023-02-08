@@ -76,3 +76,23 @@ foreach ($pairs as $key => $pair) {
 }
 
 echo 'Part 1. Sum of pair indices in order: ' . array_sum($pairsInOrder) . PHP_EOL;
+
+// Part 2
+// Unzip pairs into a single array of all the packets
+$packets = array_merge(...$pairs);
+
+// Add divider packets
+$dividerKeys = [ count($packets), count($packets) + 1 ];
+$packets[] = [[2]];
+$packets[] = [[6]];
+
+uasort($packets, function ($a, $b) {
+    return pairIsInOrder([$a, $b]) ? -1 : 1;
+});
+
+$keys = array_keys($packets);
+// Get index of dividers -- remember, indices start at 1
+$divider1 = array_search($dividerKeys[0], $keys) + 1;
+$divider2 = array_search($dividerKeys[1], $keys) + 1;
+
+echo 'Part 2. Product of divider indices: ' . ($divider1 * $divider2) . PHP_EOL;

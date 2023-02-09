@@ -16,7 +16,7 @@ foreach ($lines as $line) {
 }
 
 /**
- * Fill in grid using the line segments bormed by the point groups.
+ * Fill in grid using the line segments formed by the point groups.
  * We use a hash table for easy lookup later based on the x,y coordinates.
  * Returns the grid and the max y (in physical terms, the lowest) value.
  *

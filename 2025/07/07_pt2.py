@@ -7,7 +7,6 @@ class Game:
 
         self.heads = {}
         self.current = 0
-        self.splits = 0
 
     def find_start_point(self):
         first_line = self.lines[0]

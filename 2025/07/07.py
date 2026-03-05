@@ -61,11 +61,6 @@ class Game:
 
         
 
-        
-
-
-
-
 class MyTest(unittest.TestCase):
     def test_init(self):
         game = Game("test_input.txt")
